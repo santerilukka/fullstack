@@ -13,7 +13,6 @@ const Button = (props) => {
 }
 
 const Vote = (props) => {
-  //console.log(props.votes, '!!!')
   return (
     <>
       <button onClick={props.voting}>Vote!</button>
@@ -35,26 +34,35 @@ const App = () => {
 
   const [selected, setSelected] = useState(0)
   const [votes, setVotes] = useState(new Uint8Array(anecdotes.length))
+  const [max, setMax] = useState(0)
+
 
   const voting = () => {
     const copy = [...votes]
     copy[selected] += 1
     setVotes(copy)
-    console.log(copy)
+    if (copy[selected]>votes[max]) {
+      setMax(selected)
+    }
   }
 
   const handleClick = () => {
     const x = getRandomInt(8)
     setSelected(x)
-    console.log('indeksi on nyt', x)
   }
 
   return (
     <>
+    <h1>Anecdote of the day</h1>
       {anecdotes[selected]}
       <p>has {votes[selected]}  votes.</p>
+      
       <Button handleClick={handleClick} label={'Next anecdote'}/>
       <Vote voting={voting} votes={votes}/>
+      
+      <h1>Most voted anecdote</h1>
+      {anecdotes[max]}
+      <p>it has been voted {votes[max]} times!</p>
     </>
   )
 }
