@@ -2,28 +2,36 @@ import { useState } from 'react'
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
+    { name: 'Arto Hellas', number: '040-123456' }
   ]) 
   const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
 
   const addPerson = (event) => {
     event.preventDefault()
     
-    const isDuplicate = persons.some(person => person.name === newName)
+    const isDuplicateName = persons.some(person => person.name === newName)
+    const isDuplicateNumber = persons.some(person => person.number === newNumber)
     
-    if (isDuplicate) {
-      alert(`${newName} is already added to phonebook`)
+    if (isDuplicateName || isDuplicateNumber) {
+      alert(`${isDuplicateName ? newName : newNumber} is already added to phonebook`)
     } else {
       const personObject = {
-        name: newName
+        name: newName,
+        number: newNumber
       }
     setPersons(persons.concat(personObject))
     setNewName('')
+    setNewNumber('')
     }
   }
 
   const handlePersonChange = (event) => {
     setNewName(event.target.value)
+  }
+
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value)
   }
 
   return (
@@ -35,13 +43,17 @@ const App = () => {
           onChange={handlePersonChange}/>
         </div>
         <div>
+          number: <input value={newNumber}
+          onChange={handleNumberChange} />
+        </div>
+        <div>
           <button type="submit">add</button>
         </div>
       </form>
       <h2>Numbers</h2>
       <ul>
         {persons.map(
-          person => (<li key={person.name}>{person.name}</li>)
+          person => (<li key={person.name}>{person.name} {person.number}</li>)
         )}
       </ul>
     </div>
