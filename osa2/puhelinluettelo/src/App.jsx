@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 const Filter = ({ filter, handleFilterChange }) => {
   return (
@@ -46,6 +47,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState({state: null})
 
   useEffect(() => {
     personService
@@ -72,6 +74,10 @@ const App = () => {
             ));
             setNewName('')
             setNewNumber('')
+            setMessage({state: `${changedPerson.name} number updated to the phonebook!`})
+            setTimeout(() => {
+              setMessage({state: null})
+            }, 3000)
           })
           .catch(error => {
             alert(`Error updating contact: ${error.response.data.error}`)
@@ -93,6 +99,10 @@ const App = () => {
         .catch(error => {
           alert(`Error adding contact: ${error.response.data.error}`)
         })
+        setMessage({state: `Added ${personObject.name} to the phonebook!`})
+        setTimeout(() => {
+          setMessage({state: null})
+        }, 3000)
     }
   }
 
@@ -105,6 +115,10 @@ const App = () => {
         .then(() => {
           setPersons(persons.filter(person => person.id !== id))
         })
+        setMessage({state: `Removed ${personToDelete.name} from the phonebook`})
+        setTimeout(() => {
+          setMessage({state: null})
+        }, 3000)
     }
   }
 
@@ -122,6 +136,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={message}/>
 
       <Filter filter={filter}  handleFilterChange={handleFilterChange} />
       
