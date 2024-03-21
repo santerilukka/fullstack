@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
 import Notification from './components/Notification'
+import persons from './services/persons'
 
 const Filter = ({ filter, handleFilterChange }) => {
   return (
@@ -47,7 +48,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
-  const [message, setMessage] = useState({state: null})
+  const [message, setMessage] = useState({state: null, color: 'green'})
 
   useEffect(() => {
     personService
@@ -74,13 +75,14 @@ const App = () => {
             ));
             setNewName('')
             setNewNumber('')
-            setMessage({state: `${changedPerson.name} number updated to the phonebook!`})
+            setMessage({state: `${changedPerson.name} number updated to the phonebook!`, color: 'green'})
             setTimeout(() => {
               setMessage({state: null})
             }, 3000)
           })
           .catch(error => {
-            alert(`Error updating contact: ${error.response.data.error}`)
+            setMessage({state: `Error updating contact: ${changedPerson.name}`,color: 'red'})
+            setTimeout(() => setMessage({state: null, color: 'green'}),3000)
           })
       }
     } else {
@@ -97,9 +99,10 @@ const App = () => {
           setNewNumber('')
         })
         .catch(error => {
-          alert(`Error adding contact: ${error.response.data.error}`)
+          setMessage({state: `Error adding contact: ${returnedPerson.name}`,color: 'red'})
+          setTimeout(() => setMessage({state: null, color: 'green'}),3000)
         })
-        setMessage({state: `Added ${personObject.name} to the phonebook!`})
+        setMessage({state: `Added ${personObject.name} to the phonebook!`, color: 'green'})
         setTimeout(() => {
           setMessage({state: null})
         }, 3000)
@@ -114,11 +117,16 @@ const App = () => {
         .remove(id)
         .then(() => {
           setPersons(persons.filter(person => person.id !== id))
+          setMessage({state: `Removed ${personToDelete.name} from the phonebook`, color: 'green'})
+          setTimeout(() => {
+            setMessage({state: null})
+          }, 3000)
         })
-        setMessage({state: `Removed ${personToDelete.name} from the phonebook`})
-        setTimeout(() => {
-          setMessage({state: null})
-        }, 3000)
+        .catch(() => {
+          setPersons(persons.filter(person => person.id !== id))
+          setMessage({state: `${personToDelete.name} has already been removed from the server`,color: 'red'})
+          setTimeout(() => setMessage({state: null, color: 'green'}),3000)
+        })
     }
   }
 
